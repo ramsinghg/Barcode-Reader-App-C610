@@ -1,0 +1,15 @@
+
+$(info ************ BUILDING ************)
+ 
+BUILD_EXES+=barcodeTest
+barcodeTest_CPP_SRCS += src/main src/barcode_decoding
+barcodeTest_LIBS += lib/libfastcv.a  lib/libopencv_videoio.so.3.4.3  lib/libopencv_highgui.so.3.4.3 lib/libopencv_core.so.3.4.3 lib/libopencv_imgproc.so.3.4.3 lib/libopencv_imgcodecs.so.3.4.3
+barcodeTest_LD_FLAGS += -lpthread -lc -ldl  -lstdc++ -lm
+barcodeTest_DEFINES += VERIFY_PRINT_ERROR 
+
+# copy final build products to the ship directory
+BUILD_COPIES = \
+   $(DLLS) \
+   $(EXES) \
+   $(LIBS) \
+   $(SHIP_DIR)/ 
