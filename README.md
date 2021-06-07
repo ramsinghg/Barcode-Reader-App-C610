@@ -12,9 +12,7 @@
                                                -  stb_image.h
                                                -  stb_image_write.h 
                                          opencv2/
-                                               - contain opencv library    
-                                  lib/                                  
-                                         - contain fastcv and opencv libraries
+                                               - contain opencv header files   
                                   src/
                                          - barcode_decoding.cpp
                                          - main.c   
@@ -30,7 +28,7 @@
 ## Prerequisites
 - Setting up the Fastcv sdk on the host system as given in the Qualcomm document.
 
-### Install the FastCV SDK barcode_decoding.cpp
+### Install the FastCV SDK 
 1)  Download FastCV SDK from url https://developer.qualcomm.com/software/fast-cv-sdk/tools and select particular version named v1.7.1 for Linux Embedded
 2)  For FastCV installation and compilation, follow the below steps
   ```
@@ -76,6 +74,41 @@
      ```
      6. A folder with the name "UbuntuARM_Release" should get generated in the fastcvSimpleTest folder. It will contain the application’s binary file ‘fastcvSimpleTest’.
 
+
+### Install opencv library on board 
+- To install opencv library on the target board the required meta recipe for opencv is already present in folder “poky/meta-openembedded/meta-oe/recipes-support/opencv/opencv_3.4.5.bb” file. We need to follow the below steps to build.
+
+-  Get into the yocto working directory
+
+ ```sh
+  $ cd  <yocto working directory>
+ ```
+ 
+- Execute source command for environment setting 
+
+ ```sh
+    $ source poky/qti-conf/set_bb_env.sh
+ ```
+- The pop up menu will be open for available machines that select “qcs610-odk” and press ok. Then one more pop up window will be open for distribution selection in that we need to select “qti-distro-fullstack-perf”. Run the bitbake command for installing packages.
+
+ ```sh
+ $ bitbake opencv 
+ ```
+
+- Once the build is complete the shared library and include file will be available in “./tmp-glibc/sysroots-components/armv7ahf-neon/opencv/usr”
+Push the opencv shared library to the target board 
+
+ ```sh
+   $ cd  ./tmp-glibc/sysroots-components/armv7ahf-neon/opencv/usr/
+   $ cp lib/. <Hexagon_SDK_ROOT>/examples/common/fastcvSimpleTest/
+
+ ```
+
+**Note**: 
+- For more reference refer to the “QCS610/QCS410 Linux Platform Development Kit Quick Start Guide document”.
+- Also make sure install the all the dependency library from the yocto build to the system (ex: libgphoto2, libv4l-utils) 
+- bb recipes of above  library are available inside meta-oe layer you can directly run the bitbake command
+
         
 ## To run application on the c610 board:
 
@@ -84,13 +117,14 @@
         $ github clone <source repository>
         $ cd <source repository>
         $ cp barcodeTest <Hexagon_SDK_ROOT>/examples/common/
-     ```    
+        $ cp -r <Hexagon_SDK_ROOT>/examples/common/fastcvSimpleTest/lib/ <Hexagon_SDK_ROOT>/examples/common/barcodeTest/
+      ```    
      
 - source the setup_sdk_env.source 
     ```
       $ cd `< Hexagon SDK root directory>
       $ source setup_sdk_env.source
-      $ cd examples/common/fastcvSimpleTest
+      $ cd examples/common/barcodeTest
       $ make tree V=UbuntuARM_Release  
    ```
 - **Note**: while integrating opencv code into fastcv, we may get following errors (Similar error)
@@ -108,7 +142,7 @@
    ```
 -  Push the barcodeTest binary file and input image to the target:
    ```
-          $ adb push UbuntuARM_Release\ship\barcodeTest  /data/barcode
+          $ adb push UbuntuARM_Release/ship/barcodeTest  /data/barcode
           $ adb push sampleImage  /data/barcode/
           $ adb push lib/  /data/barcode/
    ```
@@ -120,9 +154,10 @@
           /# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/data/barcode/lib/
           /#  cd /data/barcode/
           to test with sample image  
-          /# ./barcode  sampleImage/barcode_img.jpg
+          /# ./barcodeTest  sampleImage/barcode_img.jpg
    ```
-Then barcode numbers are displayed on the terminal.   
+   
+- Then barcode numbers are displayed on the terminal.   
 
-Note: current code has a issue in detecting barcode region on the camera image, this issue will be fixed in next release.      
+- Note: current code has a issue in detecting barcode region on the camera image, this issue will be fixed in next release.      
 
