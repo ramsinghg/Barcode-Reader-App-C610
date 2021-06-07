@@ -75,7 +75,7 @@
      6. A folder with the name "UbuntuARM_Release" should get generated in the fastcvSimpleTest folder. It will contain the application’s binary file ‘fastcvSimpleTest’.
 
 
-### Install opencv library on board 
+### build opencv library 
 - To install opencv library on the target board the required meta recipe for opencv is already present in folder “poky/meta-openembedded/meta-oe/recipes-support/opencv/opencv_3.4.5.bb” file. We need to follow the below steps to build.
 
 -  Get into the yocto working directory
@@ -128,12 +128,12 @@ Push the opencv shared library to the target board
       $ make tree V=UbuntuARM_Release  
    ```
 - **Note**: while integrating opencv code into fastcv, we may get following errors (Similar error)
-  ```
+   ```
     /home/admin/Hexagon_SDK/3.5.2/tools/linaro/arm-linux-gnueabihf/include/c++/7.5.0/cstdlib:75:15: fatal error: stdlib.h: No such file or directory
     #include_next <stdlib.h>
                ^~~~~~~~~~
      To Fix this:Replace **#include_next** with **#include** in the cstdlib file from the path above.
-```  
+   ```  
 - Remount the root directory writable:
   ```
            $ adb root
